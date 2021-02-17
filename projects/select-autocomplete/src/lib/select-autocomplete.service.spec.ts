@@ -6,7 +6,7 @@ describe('SelectAutocompleteService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: SelectAutocompleteService = TestBed.get(SelectAutocompleteService);
+    const service: SelectAutocompleteService = TestBed.inject(SelectAutocompleteService);
     expect(service).toBeTruthy();
   });
 });
