@@ -5,7 +5,8 @@ import {
   OnChanges,
   Output,
   ViewChild,
-  DoCheck
+  DoCheck,
+  OnInit
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
@@ -92,10 +93,10 @@ import { FormControl } from '@angular/forms';
     `
   ]
 })
-export class SelectAutocompleteComponent implements OnChanges, DoCheck {
+export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
   @Input() selectPlaceholder = 'search...';
   @Input() placeholder: string;
-  @Input() options;
+  @Input() options$;
   @Input() disabled = false;
   @Input() display = 'display';
   @Input() value = 'value';
@@ -104,6 +105,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   @Input() showErrorMsg = false;
   @Input() selectedOptions = [''];
   @Input() multiple = true;
+  @Output() onSearch: EventEmitter<any> = new EventEmitter();
 
   // New Options
   @Input() labelCount = 1;
@@ -118,6 +120,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   selectedValue: Array<any> = [];
   selectAllChecked = false;
   displayString = '';
+  options;
   constructor() { }
 
   ngOnChanges() {
@@ -126,12 +129,19 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
     } else {
       this.fieldFormControl.enable();
     }
-    this.filteredOptions = this.options;
-    if (this.selectedOptions.length > 0) {
+    this.options$.subscribe(res => {
+      this.filteredOptions = res;
+      this.options = res;
+    });
+    if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
     } else if (this.fieldFormControl.value) {
       this.selectedValue = this.fieldFormControl.value;
     }
+  }
+
+  ngOnInit() {
+    this.onSearch.emit('');
   }
 
   ngDoCheck() {
@@ -161,18 +171,25 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   }
 
   filterItem(value) {
-    this.filteredOptions = this.options.filter(
-      item =>
-        item[this.display].toLowerCase().indexOf(value.toLowerCase()) > -1);
-    this.selectAllChecked = true;
-    this.filteredOptions.forEach(item => {
-      if (!this.selectedValue.includes(item[this.value])) {
-        this.selectAllChecked = false;
-      }
-    });
-    if (!this.filteredOptions.length) {
-      this.selectAllChecked = false;
-    }
+    /**
+     * search in the static options
+     */
+    // this.filteredOptions = this.options.filter(
+    //   item =>
+    //     item[this.display].toLowerCase().indexOf(value.toLowerCase()) > -1);
+    // this.selectAllChecked = true;
+    // this.filteredOptions.forEach(item => {
+    //   if (!this.selectedValue.includes(item[this.value])) {
+    //     this.selectAllChecked = false;
+    //   }
+    // });
+    // if (!this.filteredOptions.length) {
+    //   this.selectAllChecked = false;
+    // }
+    /**
+     * emit event with written value to search with api call
+     */
+    this.onSearch.emit(value);
   }
 
   hideOption(option) {

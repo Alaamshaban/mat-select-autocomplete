@@ -8,7 +8,7 @@
         "build_lib": "ng build select-autocomplete",
         "npm_pack": "cd dist/select-autocomplete && npm pack",
         "package": "npm run build_lib && npm run npm_pack",
-        "publish": "npm publish ./dist/select-autocomplete/mat-select-autocomplete-angular7-1.0.1.tgz",
+        "publish": "npm publish ./dist/select-autocomplete/mat-select-autocomplete-angular7-1.1.0.tgz",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e"
