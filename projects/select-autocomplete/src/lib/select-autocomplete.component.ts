@@ -6,17 +6,17 @@ import {
   Output,
   ViewChild,
   DoCheck
-} from "@angular/core";
-import { FormControl } from "@angular/forms";
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
 
 @Component({
-  selector: "mat-select-autocomplete",
+  selector: 'mat-select-autocomplete',
   template: `
     <mat-form-field appearance="{{ appearance }}">
       <mat-select
         #selectElem
         [placeholder]="placeholder"
-        [formControl]="formControl"
+        [formControl]="fieldFormControl"
         [multiple]="multiple"
         [(ngModel)]="selectedValue"
         (selectionChange)="onSelectionChange($event)"
@@ -93,44 +93,44 @@ import { FormControl } from "@angular/forms";
   ]
 })
 export class SelectAutocompleteComponent implements OnChanges, DoCheck {
-  @Input() selectPlaceholder: string = "search...";
+  @Input() selectPlaceholder = 'search...';
   @Input() placeholder: string;
   @Input() options;
   @Input() disabled = false;
-  @Input() display = "display";
-  @Input() value = "value";
-  @Input() formControl: FormControl = new FormControl();
-  @Input() errorMsg: string = "Field is required";
+  @Input() display = 'display';
+  @Input() value = 'value';
+  @Input() fieldFormControl: FormControl = new FormControl();
+  @Input() errorMsg = 'Field is required';
   @Input() showErrorMsg = false;
-  @Input() selectedOptions;
+  @Input() selectedOptions = [''];
   @Input() multiple = true;
 
   // New Options
-  @Input() labelCount: number = 1;
-  @Input() appearance: "standard" | "fill" | "outline" = "standard";
+  @Input() labelCount = 1;
+  @Input() appearance: 'standard' | 'fill' | 'outline' = 'standard';
 
   @Output()
   selectionChange: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild("selectElem") selectElem;
+  @ViewChild('selectElem') selectElem;
 
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
   selectAllChecked = false;
-  displayString = "";
-  constructor() {}
+  displayString = '';
+  constructor() { }
 
   ngOnChanges() {
     if (this.disabled) {
-      this.formControl.disable();
+      this.fieldFormControl.disable();
     } else {
-      this.formControl.enable();
+      this.fieldFormControl.enable();
     }
     this.filteredOptions = this.options;
-    if (this.selectedOptions) {
+    if (this.selectedOptions.length > 0) {
       this.selectedValue = this.selectedOptions;
-    } else if (this.formControl.value) {
-      this.selectedValue = this.formControl.value;
+    } else if (this.fieldFormControl.value) {
+      this.selectedValue = this.fieldFormControl.value;
     }
   }
 
@@ -162,8 +162,8 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
 
   filterItem(value) {
     this.filteredOptions = this.options.filter(
-      item => item[this.display].toLowerCase().indexOf(value.toLowerCase()) > -1
-    );
+      item =>
+        item[this.display].toLowerCase().indexOf(value.toLowerCase()) > -1);
     this.selectAllChecked = true;
     this.filteredOptions.forEach(item => {
       if (!this.selectedValue.includes(item[this.value])) {
@@ -189,7 +189,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   }
 
   onDisplayString() {
-    this.displayString = "";
+    this.displayString = '';
     if (this.selectedValue && this.selectedValue.length) {
       let displayOption = [];
       if (this.multiple) {
@@ -202,7 +202,7 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
         if (displayOption.length) {
           for (let i = 0; i < displayOption.length; i++) {
             if (displayOption[i] && displayOption[i][this.display]) {
-              this.displayString += displayOption[i][this.display] + ",";
+              this.displayString += displayOption[i][this.display] + ',';
             }
           }
           this.displayString = this.displayString.slice(0, -1);
@@ -243,6 +243,6 @@ export class SelectAutocompleteComponent implements OnChanges, DoCheck {
   }
 
   public trackByFn(index, item) {
-    return item.value;
+    return item[this.value];
   }
 }
