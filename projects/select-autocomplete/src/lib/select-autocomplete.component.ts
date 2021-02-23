@@ -13,13 +13,13 @@ import { FormControl } from '@angular/forms';
 @Component({
   selector: 'mat-select-autocomplete',
   template: `
-    <mat-form-field appearance="{{ appearance }}">
+    <mat-form-field class="select-autocomplete" appearance="{{ appearance }}">
       <mat-select
         #selectElem
         [placeholder]="placeholder"
+        [(ngModel)]="selectedValue"
         [formControl]="fieldFormControl"
         [multiple]="multiple"
-        [(ngModel)]="selectedValue"
         (selectionChange)="onSelectionChange($event)"
       >
         <div class="box-search">
@@ -87,6 +87,10 @@ import { FormControl } from '@angular/forms';
         line-height: 33px;
         color: #808080;
       }
+      .select-autocomplete{
+        width: 85%;
+        font-size: 15px;
+      }
       .pl-1 {
         padding-left: 1rem;
       }
@@ -103,7 +107,7 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
   @Input() fieldFormControl: FormControl = new FormControl();
   @Input() errorMsg = 'Field is required';
   @Input() showErrorMsg = false;
-  @Input() selectedOptions = [''];
+  @Input() selectedOptions;
   @Input() multiple = true;
   @Output() onSearch: EventEmitter<any> = new EventEmitter();
 
@@ -115,12 +119,13 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
   selectionChange: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('selectElem') selectElem;
+  @ViewChild('searchInput') searchInput;
 
   filteredOptions: Array<any> = [];
   selectedValue: Array<any> = [];
   selectAllChecked = false;
   displayString = '';
-  options;
+  options: Array<any> = [];
   constructor() { }
 
   ngOnChanges() {
@@ -129,10 +134,6 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
     } else {
       this.fieldFormControl.enable();
     }
-    this.options$.subscribe(res => {
-      this.filteredOptions = res;
-      this.options = res;
-    });
     if (this.selectedOptions) {
       this.selectedValue = this.selectedOptions;
     } else if (this.fieldFormControl.value) {
@@ -142,6 +143,10 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
 
   ngOnInit() {
     this.onSearch.emit('');
+    this.options$.subscribe(res => {
+      this.filteredOptions = res;
+      this.options = [...res, ...this.options];
+    });
   }
 
   ngDoCheck() {
@@ -200,7 +205,7 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
   getFilteredOptionsValues() {
     const filteredValues = [];
     this.filteredOptions.forEach(option => {
-      filteredValues.push(option.value);
+      filteredValues.push(option[this.value]);
     });
     return filteredValues;
   }
@@ -257,6 +262,8 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
     }
     this.selectedValue = val.value;
     this.selectionChange.emit(this.selectedValue);
+    this.searchInput.nativeElement.value = '';
+    this.onSearch.emit('');
   }
 
   public trackByFn(index, item) {
