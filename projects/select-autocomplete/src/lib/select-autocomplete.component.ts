@@ -16,6 +16,7 @@ import { FormControl } from '@angular/forms';
     <mat-form-field class="select-autocomplete" appearance="{{ appearance }}">
       <mat-select
         #selectElem
+        id="{{fieldsSelectors?.selectField}}"
         [placeholder]="placeholder"
         [(ngModel)]="selectedValue"
         [formControl]="fieldFormControl"
@@ -32,6 +33,7 @@ import { FormControl } from '@angular/forms';
           ></mat-checkbox>
           <input
             #searchInput
+            id="{{fieldsSelectors?.inputField}}"
             type="text"
             [ngClass]="{ 'pl-1': !multiple }"
             (input)="filterItem(searchInput.value)"
@@ -42,7 +44,7 @@ import { FormControl } from '@angular/forms';
             (click)="filterItem(''); searchInput.value = ''"
           >
             <button mat-icon-button class="search-button">
-              <mat-icon class="mat-24" aria-label="Search icon">clear</mat-icon>
+              <mat-icon class="mat-24" aria-label="Search icon" id="{{fieldsSelectors?.clearFieldIcon}}">clear</mat-icon>
             </button>
           </div>
         </div>
@@ -114,6 +116,7 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
   // New Options
   @Input() labelCount = 1;
   @Input() appearance: 'standard' | 'fill' | 'outline' = 'standard';
+  @Input() fieldsSelectors: ElementsSelectors;
 
   @Output()
   selectionChange: EventEmitter<any> = new EventEmitter();
@@ -269,4 +272,10 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
   public trackByFn(index, item) {
     return item[this.value];
   }
+}
+
+export interface ElementsSelectors {
+  inputField: string;
+  selectField: string;
+  clearFieldIcon: string;
 }
