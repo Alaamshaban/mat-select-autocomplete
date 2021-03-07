@@ -14,6 +14,7 @@ import { FormControl } from '@angular/forms';
   selector: 'mat-select-autocomplete',
   template: `
     <mat-form-field class="select-autocomplete" appearance="{{ appearance }}">
+    <mat-label *ngIf="fieldLabel">{{ fieldLabel }}</mat-label>
       <mat-select
         #selectElem
         id="{{fieldsSelectors?.selectField}}"
@@ -90,8 +91,11 @@ import { FormControl } from '@angular/forms';
         color: #808080;
       }
       .select-autocomplete{
-        width: 85%;
+        width: 100%;
         font-size: 15px;
+      }
+      ::ng-deep .select-autocomplete label {
+        font-weight: bold;
       }
       .pl-1 {
         padding-left: 1rem;
@@ -111,6 +115,7 @@ export class SelectAutocompleteComponent implements OnChanges, OnInit, DoCheck {
   @Input() showErrorMsg = false;
   @Input() selectedOptions;
   @Input() multiple = true;
+  @Input() fieldLabel: string;
   @Output() onSearch: EventEmitter<any> = new EventEmitter();
 
   // New Options
